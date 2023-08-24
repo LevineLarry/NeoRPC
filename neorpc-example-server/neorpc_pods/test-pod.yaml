@@ -1,0 +1,75 @@
+name: test-pod
+description: This is a test pod
+version: 1.0.0
+services:
+  - name: users
+    description: This service is used to manage users
+    events: # Events that the service can emit
+      - name: account_created
+        description: This event is fired when a new account signs up
+        public: true
+        params:
+          - name: id
+            type: int
+            description: The newly created users id
+          - name: email
+            type: string
+            description: The users email
+      - name: email_validated
+        description: This event is fired when a users email is validated
+        public: false
+        params:
+          - name: id
+            type: int
+            description: The users id
+          - name: timestamp
+            type: int
+            description: A timestamp from when the email was validated
+      - name: sign_in_complete
+        description: This event is fired when a user has successfully signed in
+        public: false
+        params:
+          - name: id
+            type: int
+            description: The users id
+          - name: timestamp
+            type: int
+            description: A timestamp from when the user signed in
+    procs: # Procedures that consumers can execute on the service
+      - name: sign_up
+        description: This procedure is used to sign up a new user
+        public: false
+        emits:
+          - account_created
+        params:
+          - name: username
+            type: string
+            description: The users username
+            required: true
+          - name: email
+            type: string
+            description: The users email
+            required: true
+          - name: password
+            type: string
+            description: The users password
+            required: true
+      - name: sign_in
+        description: This procedure is used to sign in as a user
+        public: false
+        emits:
+          - sign_in_complete
+        params:
+          - name: username
+            type: string
+            description: The users username
+            required: true
+          - name: password
+            type: string
+            description: The users password
+            required: true
+          - name: attempt
+            type: int
+            description: The number of times the user has attempted to sign in
+            required: false
+        

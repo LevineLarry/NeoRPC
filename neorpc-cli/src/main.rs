@@ -25,6 +25,8 @@ pub mod helpers;
 //neorpc generate -pod ./neorpc_pods/test-pod.yaml -lang rust -out ./neorpc-server
 fn main() {
     let args: Vec<String> = env::args().collect();
+    let invocation_dir = env::current_dir().unwrap().to_str().unwrap().to_string();
+
     println!("{:?}", args);
 
     if args.len() < 5 {
@@ -37,7 +39,8 @@ fn main() {
                 panic!("Please provide a path to a pod declaration file");
             }
 
-            let pod_location = args[3].clone();
+            let pod_location = invocation_dir.clone() + "/" + &args[3].clone();
+            println!("Searching for pod file in {}", pod_location.clone());
 
             if args[4] == "-lang" {
                 if args.len() < 6 {
@@ -60,12 +63,11 @@ fn main() {
                             Generator::generate_client_trait(&pod, out_dir.clone());
                         }
                     } else {
-                        println!("Outputting to ./");
-                        let out_dir = "./".to_string();
+                        println!("Outputting to {}", invocation_dir.clone());
 
                         let pod = parse(pod_location); //Path is relative to dir that cargo run is called from
-                        Generator::generate_server_trait(&pod, out_dir.clone());
-                        Generator::generate_client_trait(&pod, out_dir.clone());
+                        Generator::generate_server_trait(&pod, invocation_dir.clone());
+                        Generator::generate_client_trait(&pod, invocation_dir.clone());
                     }
                 }
 
